@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 
-export default function Weather() {
+export default function Weather({ city, temp, weather }) {
   return (
     <LinearGradient colors={["#00C6FB", "#005BEA"]} style={styles.container}>
       <View style={styles.upper}>
@@ -13,11 +13,11 @@ export default function Weather() {
           size={144}
           name="ios-rainy"
         ></Ionicons>
-        <Text style={styles.city}>서울시</Text>
-        <Text style={styles.temp}>24°</Text>
+        <Text style={styles.city}>{city}</Text>
+        <Text style={styles.temp}>{temp}°</Text>
       </View>
       <View style={styles.lower}>
-        <Text style={styles.title}>비가 오네요</Text>
+        <Text style={styles.title}>{weather}</Text>
         <Text style={styles.subtitle}>우산을 챙기세요!</Text>
       </View>
     </LinearGradient>

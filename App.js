@@ -5,31 +5,39 @@ import Weather from "./Weather";
 import * as Location from "expo-location";
 
 export default function App() {
+  const [weather, setWeather] = useState(null);
   const [city, setCity] = useState("Loading...");
   const [isLoaded, setIsLoaded] = useState(false);
   const [location, setLocation] = useState(null);
-  const [error, setError] = useState(null);
   const API_KEY = `6d1e0b7aed7e7072634b2a5a9ef5d6dc`;
 
   const userLocation = async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
-      setIsLoaded(false);
-    } else if (status === "granted") {
-      setIsLoaded(true);
-      let {
-        coords: { latitude, longitude },
-      } = await Location.getCurrentPositionAsync({ accuracy: 5 });
-      const location = await Location.reverseGeocodeAsync(
-        { latitude, longitude },
-        { useGoogleMaps: false }
-      );
-      setCity(location[0].city);
-      const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}`
-      );
-      const json = await response.json();
-      console.log(json);
+    try {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setIsLoaded(false);
+      } else if (status === "granted") {
+        setIsLoaded(true);
+        let {
+          coords: { latitude, longitude },
+        } = await Location.getCurrentPositionAsync({ accuracy: 5 });
+        const location = await Location.reverseGeocodeAsync({
+          latitude,
+          longitude,
+        });
+        setCity(location[0].city);
+        const response = await fetch(
+          `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}`
+        );
+        const json = await response.json();
+        setWeather({
+          temperature: json.main.temp,
+          name: json.weather[0].main,
+        });
+        console.log(weather.name);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -40,9 +48,11 @@ export default function App() {
     <View style={styles.container}>
       <StatusBar hidden={true}></StatusBar>
       {isLoaded ? (
-        <Weather>
-          <Text>{city}</Text>
-        </Weather>
+        <Weather
+          city={city}
+          temp={weather ? Math.floor(weather.temperature - 273.15) : null}
+          weather={weather ? weather.name : null}
+        ></Weather>
       ) : (
         <View style={styles.loading}>
           <Text style={styles.loadingText}>오늘의 옷차림 알아보기</Text>
