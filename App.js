@@ -1,4 +1,5 @@
 import { StatusBar } from "expo-status-bar";
+import { LinearGradient } from "expo-linear-gradient";
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Weather from "./Weather";
@@ -8,7 +9,6 @@ export default function App() {
   const [weather, setWeather] = useState(null);
   const [city, setCity] = useState("Loading...");
   const [isLoaded, setIsLoaded] = useState(false);
-  const [location, setLocation] = useState(null);
   const API_KEY = `6d1e0b7aed7e7072634b2a5a9ef5d6dc`;
 
   const userLocation = async () => {
@@ -33,8 +33,8 @@ export default function App() {
         setWeather({
           temperature: json.main.temp,
           name: json.weather[0].main,
+          humidity: json.main.humidity,
         });
-        console.log(weather.name);
       }
     } catch (error) {
       console.log(error);
@@ -45,20 +45,21 @@ export default function App() {
     userLocation();
   }, []);
   return (
-    <View style={styles.container}>
+    <LinearGradient colors={["#9D50BB", "#6E48AA"]} style={styles.container}>
       <StatusBar hidden={true}></StatusBar>
       {isLoaded ? (
         <Weather
           city={city}
           temp={weather ? Math.floor(weather.temperature - 273.15) : null}
-          weather={weather ? weather.name : null}
+          weatherName={weather ? weather.name : null}
+          humidity={weather ? weather.humidity : null}
         ></Weather>
       ) : (
         <View style={styles.loading}>
           <Text style={styles.loadingText}>오늘의 옷차림 알아보기</Text>
         </View>
       )}
-    </View>
+    </LinearGradient>
   );
 }
 
@@ -70,7 +71,6 @@ const styles = StyleSheet.create({
 
   loading: {
     flex: 1,
-    backgroundColor: "#373f51",
     paddingLeft: 25,
     justifyContent: "flex-end",
   },
