@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
+import Clothes from "./Clothes";
 
 const weatherCase = {
   Rain: {
@@ -19,7 +20,7 @@ const weatherCase = {
   Clouds: {
     colors: ["#bdc3c7", "#2c3e50"],
     title: "구름이 많고 날씨가 흐려요",
-    subtitle: "좋아하는 음악 감상하거나 독서를 하는 것도 좋겠어요!",
+    subtitle: "좋아하는 음악 감상을 하거나 독서를 하는 것도 좋겠네요!",
     icon: "ios-cloudy",
   },
 
@@ -48,7 +49,7 @@ const weatherCase = {
 export default function Weather({ city, temp, weatherName, humidity }) {
   return (
     <LinearGradient
-      colors={weatherCase[weatherName].colors}
+      colors={weatherCase[weatherName]?.colors || []}
       style={styles.container}
     >
       <View style={styles.upper}>
@@ -56,15 +57,24 @@ export default function Weather({ city, temp, weatherName, humidity }) {
           style={styles.icons}
           color={"white"}
           size={120}
-          name={weatherCase[weatherName].icon}
+          name={weatherCase[weatherName]?.icon || "ios-alert"}
         ></Ionicons>
-        <Text style={styles.city}>{city}</Text>
-        <Text style={styles.temp}>{temp}°</Text>
-        <Text style={styles.humidity}>💧{humidity}%</Text>
+        <View style={styles.rayout}>
+          <Text style={styles.temp}>{temp}°</Text>
+          <View style={styles.addInfo}>
+            <Text style={styles.city}>{city}</Text>
+            <Text style={styles.humidity}>💧{humidity}%</Text>
+          </View>
+        </View>
       </View>
       <View style={styles.lower}>
-        <Text style={styles.title}>{weatherCase[weatherName].title}</Text>
-        <Text style={styles.subtitle}>{weatherCase[weatherName].subtitle}</Text>
+        <Clothes temp={temp}></Clothes>
+        <Text style={styles.title}>
+          {weatherCase[weatherName]?.title || ""}
+        </Text>
+        <Text style={styles.subtitle}>
+          {weatherCase[weatherName]?.subtitle || ""}
+        </Text>
       </View>
     </LinearGradient>
   );
@@ -73,6 +83,7 @@ export default function Weather({ city, temp, weatherName, humidity }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 25,
   },
 
   upper: {
@@ -80,23 +91,29 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  rayout: {
+    flexDirection: "row",
+    marginTop: 10,
+  },
 
-  icons: {
-    marginTop: 150,
+  addInfo: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 20,
+    marginLeft: 10,
   },
 
   city: {
-    fontSize: 58,
+    fontSize: 30,
     backgroundColor: "transparent",
     color: "white",
-    marginTop: 20,
   },
 
   temp: {
-    fontSize: 55,
+    fontSize: 110,
     backgroundColor: "transparent",
     color: "white",
-    marginTop: 10,
+    marginLeft: 20,
   },
 
   humidity: {
@@ -110,19 +127,18 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "flex-start",
     justifyContent: "flex-end",
-    padding: 25,
   },
 
   title: {
-    fontSize: 38,
+    fontSize: 30,
     backgroundColor: "transparent",
     color: "white",
     marginBottom: 10,
-    fontWeight: "300",
+    fontWeight: "bold",
   },
 
   subtitle: {
-    fontSize: 24,
+    fontSize: 22,
     backgroundColor: "transparent",
     color: "white",
     marginBottom: 24,
